@@ -1,38 +1,66 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kalkulator paczek na europalecie</title>
-  <link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator paczek na europalecie</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Kalkulator paczek na europalecie</h1>
-    
-    <p>Wymiary europalety: 80 cm x 120 cm</p>
-    
-    <label for="paczka-szer">Szerokość paczki (cm):</label>
-    <input type="number" id="paczka-szer" required>
-    
-    <label for="paczka-dl">Długość paczki (cm):</label>
-    <input type="number" id="paczka-dl" required>
-    
-    <label for="paczka-wys">Wysokość paczki (cm):</label>
-    <input type="number" id="paczka-wys" required>
-
-    <label for="paleta-wys-max">Maksymalna wysokość ułożenia (cm):</label>
-    <input type="number" id="paleta-wys-max" value="190" required>
-    
-    <button id="oblicz">Oblicz</button>
-    
-    <p id="wynik"></p>
-    
-    <canvas id="canvas" width="500" height="300">
-      Twoja przeglądarka nie obsługuje elementu canvas.
-    </canvas>
-  </div>
-  
-  <script src="js/script.js"></script>
+    <div class="container">
+        <header>
+            <h1>Kalkulator paczek na europalecie</h1>
+        </header>
+        <main>
+            <section class="input-section">
+                <h2>Wymiary paczki i palety</h2>
+                <form id="palette-form">
+                    <div class="form-group">
+                        <label for="paczka-szer">Szerokość paczki (cm):</label>
+                        <input type="number" id="paczka-szer" placeholder="np. 40" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paczka-dl">Długość paczki (cm):</label>
+                        <input type="number" id="paczka-dl" placeholder="np. 60" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paczka-wys">Wysokość paczki (cm):</label>
+                        <input type="number" id="paczka-wys" placeholder="np. 40" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paczka-waga">Waga paczki (kg):</label>
+                        <input type="number" id="paczka-waga" placeholder="np. 10" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paleta-wys-max">Maksymalna wysokość ułożenia (cm):</label>
+                        <input type="number" id="paleta-wys-max" value="190" required>
+                    </div>
+                    <button type="submit" id="oblicz">Oblicz</button>
+                </form>
+            </section>
+            <section class="results-section">
+                <h2>Wyniki</h2>
+                <div id="wynik"></div>
+                <div id="waga-wynik"></div>
+            </section>
+            <section class="visualization-section">
+                <h2>Wizualizacja</h2>
+                <div id="view-toggle">
+                    <button id="view-2d" class="active">Widok 2D</button>
+                    <button id="view-3d">Widok 3D</button>
+                </div>
+                <div id="canvas-container">
+                    <canvas id="canvas-2d"></canvas>
+                    <div id="canvas-3d"></div>
+                </div>
+            </section>
+        </main>
+        <footer>
+            <button id="export-pdf">Eksportuj do PDF</button>
+            <button id="export-excel">Eksportuj do Excel</button>
+        </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>
