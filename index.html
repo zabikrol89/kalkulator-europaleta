@@ -4,41 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalkulator paczek na europalecie</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Kalkulator paczek na europalecie</h1>
-        <form id="paleta-form">
-            <h2>Wymiary paczki i palety</h2>
-            <label for="paczka-szer">Szerokość paczki (cm):</label>
-            <input type="number" id="paczka-szer" required>
-            
-            <label for="paczka-dl">Długość paczki (cm):</label>
-            <input type="number" id="paczka-dl" required>
-            
-            <label for="paczka-wys">Wysokość paczki (cm):</label>
-            <input type="number" id="paczka-wys" required>
-            
-            <label for="paczka-waga">Waga paczki (kg):</label>
-            <input type="number" id="paczka-waga" step="0.1" required>
-            
-            <label for="paleta-wys-max">Maksymalna wysokość ułożenia (cm):</label>
-            <input type="number" id="paleta-wys-max" value="190" required>
-            
-            <button type="submit" id="oblicz">Oblicz</button>
-        </form>
-        
-        <div id="wyniki">
-            <h2>Wyniki</h2>
-            <!-- Tutaj będą wyświetlane wyniki -->
-        </div>
-        
-        <div id="wizualizacja">
-            <h2>Wizualizacja</h2>
-            <canvas id="canvas" width="400" height="220"></canvas>
-        </div>
+        <header>
+            <h1>Kalkulator paczek na europalecie</h1>
+        </header>
+        <main>
+            <form id="paleta-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="paczka-szer">
+                            <i class="fas fa-arrows-alt-h" aria-hidden="true"></i>
+                            Szerokość paczki (cm)
+                        </label>
+                        <input type="number" id="paczka-szer" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paczka-dl">
+                            <i class="fas fa-arrows-alt-v" aria-hidden="true"></i>
+                            Długość paczki (cm)
+                        </label>
+                        <input type="number" id="paczka-dl" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="paczka-wys">
+                            <i class="fas fa-arrow-up" aria-hidden="true"></i>
+                            Wysokość paczki (cm)
+                        </label>
+                        <input type="number" id="paczka-wys" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paczka-waga">
+                            <i class="fas fa-weight" aria-hidden="true"></i>
+                            Waga paczki (kg)
+                        </label>
+                        <input type="number" id="paczka-waga" step="0.1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="paleta-wys-max">
+                        <i class="fas fa-pallet" aria-hidden="true"></i>
+                        Maksymalna wysokość ułożenia (cm)
+                    </label>
+                    <input type="number" id="paleta-wys-max" value="190" required>
+                </div>
+                <button type="submit" id="oblicz">
+                    <i class="fas fa-calculator" aria-hidden="true"></i>
+                    Oblicz
+                </button>
+            </form>
+            <section id="wyniki" aria-live="polite">
+                <h2>Wyniki</h2>
+                <div id="wyniki-content"></div>
+            </section>
+            <section id="wizualizacja">
+                <h2>Wizualizacja</h2>
+                <div id="svg-container"></div>
+            </section>
+        </main>
     </div>
-    <script src="js/script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <script src="js/script.js" type="text/babel"></script>
 </body>
 </html>
