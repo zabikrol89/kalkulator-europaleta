@@ -7,12 +7,32 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
-  <div style="display: flex; flex: 50; flex-direction: column; align-items: center;">
+  <div class="container">
+    <h1>Kalkulator paczek na europalecie</h1>
+    
+    <p>Wymiary europalety: 80 cm x 120 cm</p>
+    
+    <label for="paczka-szer">Szerokość paczki (cm):</label>
+    <input type="number" id="paczka-szer" required>
+    
+    <label for="paczka-dl">Długość paczki (cm):</label>
+    <input type="number" id="paczka-dl" required>
+    
+    <label for="paczka-wys">Wysokość paczki (cm):</label>
+    <input type="number" id="paczka-wys" required>
+
+    <label for="paleta-wys-max">Maksymalna wysokość ułożenia (cm):</label>
+    <input type="number" id="paleta-wys-max" value="190" required>
+    
+    <button id="oblicz">Oblicz</button>
+    
+    <p id="wynik"></p>
+    
+    <canvas id="canvas" width="500" height="300">
+      Twoja przeglądarka nie obsługuje elementu canvas.
+    </canvas>
   </div>
-</div>
   
   <script src="script.js"></script>
 </body>
 </html>
-
