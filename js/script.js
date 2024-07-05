@@ -96,5 +96,7 @@ function obliczIloscPaczek() {
 }
 
 // Pobierz przycisk i dodaj nasłuchiwacz zdarzeń
-const przycisk = document.getElementById('oblicz');
-przycisk.addEventListener('click', obliczIloscPaczek);
+document.addEventListener('DOMContentLoaded', function() {
+  const przycisk = document.getElementById('oblicz');
+  przycisk.addEventListener('click', obliczIloscPaczek);
+});
