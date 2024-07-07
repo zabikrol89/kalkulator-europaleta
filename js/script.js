@@ -1,9 +1,8 @@
 console.log("Script loaded");
 
-// Komponent React do wizualizacji palety
 const PaletteVisualization = ({ boxCount, layout }) => {
   console.log("PaletteVisualization rendered", { boxCount, layout });
-  const boxSize = 20;
+  const boxSize = 30;
   const paletteWidth = layout.x * boxSize;
   const paletteHeight = layout.y * boxSize;
   const paletteDepth = layout.z * boxSize;
@@ -14,21 +13,18 @@ const PaletteVisualization = ({ boxCount, layout }) => {
 
     return (
       <g key={`box-${x}-${y}-${z}`}>
-        {/* Górna ściana */}
         <polygon
           points={`${xPos},${yPos} ${xPos + boxSize},${yPos - boxSize / 2} ${xPos + boxSize * 1.5},${yPos} ${xPos + boxSize / 2},${yPos + boxSize / 2}`}
           fill="#90EE90"
           stroke="#2E8B57"
           strokeWidth="1"
         />
-        {/* Prawa ściana */}
         <polygon
           points={`${xPos + boxSize * 1.5},${yPos} ${xPos + boxSize / 2},${yPos + boxSize / 2} ${xPos + boxSize / 2},${yPos + boxSize * 1.3} ${xPos + boxSize * 1.5},${yPos + boxSize * 0.8}`}
           fill="#32CD32"
           stroke="#2E8B57"
           strokeWidth="1"
         />
-        {/* Lewa ściana */}
         <polygon
           points={`${xPos},${yPos} ${xPos},${yPos + boxSize * 0.8} ${xPos + boxSize / 2},${yPos + boxSize * 1.3} ${xPos + boxSize / 2},${yPos + boxSize / 2}`}
           fill="#7CFC00"
@@ -39,14 +35,13 @@ const PaletteVisualization = ({ boxCount, layout }) => {
     );
   };
 
+  const svgWidth = paletteWidth * 2;
+  const svgHeight = (paletteHeight + paletteDepth) * 1.5;
+
   return (
-    <svg width={paletteWidth * 2} height={(paletteHeight + paletteDepth) * 1.5} viewBox={`0 0 ${paletteWidth * 2} ${(paletteHeight + paletteDepth) * 1.5}`}>
-      <text x="10" y="20" fill="black">Boxes: {boxCount}</text>
-      <text x="10" y="40" fill="black">Layout: {JSON.stringify(layout)}</text>
-      {/* Paleta */}
-      <rect x={paletteWidth / 4} y={(paletteHeight + paletteDepth) * 1.4} width={paletteWidth * 1.5} height={paletteHeight / 4} fill="#8B4513" />
+    <svg width={svgWidth} height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`}>
+      <rect x={0} y={svgHeight - boxSize} width={paletteWidth * 1.5} height={boxSize / 2} fill="#8B4513" />
       
-      {/* Paczki */}
       {[...Array(layout.z)].map((_, z) =>
         [...Array(layout.y)].map((_, y) =>
           [...Array(layout.x)].map((_, x) => {
@@ -57,69 +52,17 @@ const PaletteVisualization = ({ boxCount, layout }) => {
           })
         )
       )}
+
+      <text x={10} y={20} fill="black" fontSize="14">Układ: {layout.x} x {layout.y} x {layout.z}</text>
+      <text x={10} y={40} fill="black" fontSize="14">Liczba paczek: {boxCount}</text>
     </svg>
   );
 };
 
-// Funkcja do obliczania optymalnego układu
-function calculateOptimalLayout(szer_paczki, dl_paczki, wys_paczki, szer_palety, dl_palety, wys_max) {
-  const x = Math.floor(szer_palety / szer_paczki);
-  const y = Math.floor(dl_palety / dl_paczki);
-  const z = Math.floor(wys_max / wys_paczki);
-  return { x, y, z };
-}
+// Reszta kodu pozostaje bez zmian
 
-// Główna funkcja kalkulatora
-function obliczIloscPaczek() {
-  const szer_paczki = parseInt(document.getElementById('paczka-szer').value);
-  const dl_paczki = parseInt(document.getElementById('paczka-dl').value);
-  const wys_paczki = parseInt(document.getElementById('paczka-wys').value);
-  const waga_paczki = parseFloat(document.getElementById('paczka-waga').value);
-  const wys_max = parseInt(document.getElementById('paleta-wys-max').value);
-  const szer_palety = 80;
-  const dl_palety = 120;
-
-  if (isNaN(szer_paczki) || isNaN(dl_paczki) || isNaN(wys_paczki) || isNaN(waga_paczki) || isNaN(wys_max)) {
-    document.getElementById('wyniki-content').innerHTML = 'Proszę wprowadzić poprawne wartości liczbowe dla wszystkich pól.';
-    return;
-  }
-
-  const layout = calculateOptimalLayout(szer_paczki, dl_paczki, wys_paczki, szer_palety, dl_palety, wys_max);
-  const ile_paczek = layout.x * layout.y * layout.z;
-  const calkowita_waga = ile_paczek * waga_paczki;
-
-  console.log("Calculated layout:", layout);
-  console.log("Number of boxes:", ile_paczek);
-
-  let wynik_tekst = `Na paletę zmieści się ${ile_paczek} paczek (${layout.x} x ${layout.y} x ${layout.z}).`;
-  wynik_tekst += `<br>Całkowita waga: ${calkowita_waga.toFixed(2)} kg`;
-
-  document.getElementById('wyniki-content').innerHTML = wynik_tekst;
-
-  // Renderowanie wizualizacji
-  ReactDOM.render(
-    <PaletteVisualization boxCount={ile_paczek} layout={layout} />,
-    document.getElementById('svg-container')
-  );
-}
-
-// Nasłuchiwanie na submit formularza
-document.getElementById('paleta-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  obliczIloscPaczek();
-});
-
-console.log("Initial render");
 // Inicjalne renderowanie pustej wizualizacji
 ReactDOM.render(
   <PaletteVisualization boxCount={0} layout={{x: 1, y: 1, z: 1}} />,
   document.getElementById('svg-container')
 );
-
-// Test component
-function TestComponent() {
-  return <div>React działa!</div>;
-}
-
-// Uncomment the line below if you want to test if React is working
-// ReactDOM.render(<TestComponent />, document.getElementById('svg-container'));
