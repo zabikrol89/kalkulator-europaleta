@@ -1,7 +1,3 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import IzometrycznaWizualizacja from './components/IzometrycznaWizualizacja';
-
 // Główna funkcja kalkulatora
 function obliczIloscPaczek() {
   const szer_paczki = parseInt(document.getElementById('paczka-szer').value);

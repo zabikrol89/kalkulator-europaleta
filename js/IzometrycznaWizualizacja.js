@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { ZoomIn, ZoomOut } from 'lucide-react';
+const { ZoomIn, ZoomOut } = LucideReact;
 
 const IzometrycznaWizualizacja = ({ szerPaczki, dlPaczki, wysPaczki, optymalnyUklad }) => {
-  const [skala, setSkala] = useState(1);
-  const [viewBox, setViewBox] = useState("-150 -100 300 200");
+  const [skala, setSkala] = React.useState(1);
+  const [viewBox, setViewBox] = React.useState("-150 -100 300 200");
 
   const SZER_PALETY = 80 * skala;
   const DL_PALETY = 120 * skala;
   const WYS_PALETY = 14 * skala;
 
-  useEffect(() => {
+  React.useEffect(() => {
     dostosujWidok();
   }, [optymalnyUklad, skala]);
 
@@ -149,5 +148,3 @@ const IzometrycznaWizualizacja = ({ szerPaczki, dlPaczki, wysPaczki, optymalnyUk
     </div>
   );
 };
-
-export default IzometrycznaWizualizacja;
