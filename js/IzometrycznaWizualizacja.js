@@ -1,35 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { ZoomIn, ZoomOut } from 'lucide-react';
 
-const IzometrycznaWizualizacja = ({ szerPaczki, dlPaczki, wysPaczki, maxWysokosc = 190 }) => {
+const IzometrycznaWizualizacja = ({ szerPaczki, dlPaczki, wysPaczki, optymalnyUklad }) => {
   const [skala, setSkala] = useState(1);
   const [viewBox, setViewBox] = useState("-150 -100 300 200");
 
-  const SZER_PALETY = 80;
-  const DL_PALETY = 120;
-  const WYS_PALETY = 14;
-
-  const optymalnyUklad = {
-    szer: Math.floor(SZER_PALETY / szerPaczki),
-    dl: Math.floor(DL_PALETY / dlPaczki),
-    wys: Math.floor((maxWysokosc - WYS_PALETY) / wysPaczki)
-  };
+  const SZER_PALETY = 80 * skala;
+  const DL_PALETY = 120 * skala;
+  const WYS_PALETY = 14 * skala;
 
   useEffect(() => {
     dostosujWidok();
-  }, [szerPaczki, dlPaczki, wysPaczki, skala, maxWysokosc]);
+  }, [optymalnyUklad, skala]);
 
   const dostosujWidok = () => {
     const maxWymiar = Math.max(
-      SZER_PALETY,
-      DL_PALETY,
-      optymalnyUklad.wys * wysPaczki + WYS_PALETY
+      optymalnyUklad.x * szerPaczki,
+      optymalnyUklad.y * dlPaczki, 
+      optymalnyUklad.z * wysPaczki
     );
     const nowaSkala = 200 / maxWymiar;
     setSkala(nowaSkala);
     
-    const szerokosc = Math.max(300, (SZER_PALETY + DL_PALETY) * nowaSkala);
-    const wysokosc = Math.max(200, (SZER_PALETY + DL_PALETY + optymalnyUklad.wys * wysPaczki + WYS_PALETY) * nowaSkala);
+    const szerokosc = Math.max(300, SZER_PALETY + DL_PALETY);
+    const wysokosc = Math.max(200, SZER_PALETY + DL_PALETY + optymalnyUklad.z * wysPaczki * nowaSkala);
     setViewBox(`${-szerokosc/2} ${-wysokosc/2} ${szerokosc} ${wysokosc}`);
   };
 
@@ -40,9 +34,9 @@ const IzometrycznaWizualizacja = ({ szerPaczki, dlPaczki, wysPaczki, maxWysokosc
     <g>
       <polygon
         points={`
-          ${isoX(0, DL_PALETY * skala)},${isoY(0, DL_PALETY * skala, 0)}
-          ${isoX(SZER_PALETY * skala, DL_PALETY * skala)},${isoY(SZER_PALETY * skala, DL_PALETY * skala, 0)}
-          ${isoX(SZER_PALETY * skala, 0)},${isoY(SZER_PALETY * skala, 0, 0)}
+          ${isoX(0, DL_PALETY)},${isoY(0, DL_PALETY, 0)}
+          ${isoX(SZER_PALETY, DL_PALETY)},${isoY(SZER_PALETY, DL_PALETY, 0)}
+          ${isoX(SZER_PALETY, 0)},${isoY(SZER_PALETY, 0, 0)}
           ${isoX(0, 0)},${isoY(0, 0, 0)}
         `}
         fill="#8B4513"
@@ -51,10 +45,10 @@ const IzometrycznaWizualizacja = ({ szerPaczki, dlPaczki, wysPaczki, maxWysokosc
       />
       <polygon
         points={`
-          ${isoX(0, DL_PALETY * skala)},${isoY(0, DL_PALETY * skala, 0)}
-          ${isoX(0, DL_PALETY * skala)},${isoY(0, DL_PALETY * skala, WYS_PALETY * skala)}
-          ${isoX(SZER_PALETY * skala, DL_PALETY * skala)},${isoY(SZER_PALETY * skala, DL_PALETY * skala, WYS_PALETY * skala)}
-          ${isoX(SZER_PALETY * skala, DL_PALETY * skala)},${isoY(SZER_PALETY * skala, DL_PALETY * skala, 0)}
+          ${isoX(0, DL_PALETY)},${isoY(0, DL_PALETY, 0)}
+          ${isoX(0, DL_PALETY)},${isoY(0, DL_PALETY, WYS_PALETY)}
+          ${isoX(SZER_PALETY, DL_PALETY)},${isoY(SZER_PALETY, DL_PALETY, WYS_PALETY)}
+          ${isoX(SZER_PALETY, DL_PALETY)},${isoY(SZER_PALETY, DL_PALETY, 0)}
         `}
         fill="#6B3E26"
         stroke="#5D2E0D"
@@ -62,10 +56,10 @@ const IzometrycznaWizualizacja = ({ szerPaczki, dlPaczki, wysPaczki, maxWysokosc
       />
       <polygon
         points={`
-          ${isoX(SZER_PALETY * skala, 0)},${isoY(SZER_PALETY * skala, 0, 0)}
-          ${isoX(SZER_PALETY * skala, 0)},${isoY(SZER_PALETY * skala, 0, WYS_PALETY * skala)}
-          ${isoX(SZER_PALETY * skala, DL_PALETY * skala)},${isoY(SZER_PALETY * skala, DL_PALETY * skala, WYS_PALETY * skala)}
-          ${isoX(SZER_PALETY * skala, DL_PALETY * skala)},${isoY(SZER_PALETY * skala, DL_PALETY * skala, 0)}
+          ${isoX(SZER_PALETY, 0)},${isoY(SZER_PALETY, 0, 0)}
+          ${isoX(SZER_PALETY, 0)},${isoY(SZER_PALETY, 0, WYS_PALETY)}
+          ${isoX(SZER_PALETY, DL_PALETY)},${isoY(SZER_PALETY, DL_PALETY, WYS_PALETY)}
+          ${isoX(SZER_PALETY, DL_PALETY)},${isoY(SZER_PALETY, DL_PALETY, 0)}
         `}
         fill="#5D2E0D"
         stroke="#4A2508"
@@ -77,12 +71,12 @@ const IzometrycznaWizualizacja = ({ szerPaczki, dlPaczki, wysPaczki, maxWysokosc
   const renderPaczki = () => {
     const paczki = [];
     const GAP = 0.5;
-    for (let z = 0; z < optymalnyUklad.wys; z++) {
-      for (let y = 0; y < optymalnyUklad.dl; y++) {
-        for (let x = 0; x < optymalnyUklad.szer; x++) {
+    for (let z = 0; z < optymalnyUklad.z; z++) {
+      for (let y = 0; y < optymalnyUklad.y; y++) {
+        for (let x = 0; x < optymalnyUklad.x; x++) {
           const posX = x * (szerPaczki * skala + GAP);
           const posY = y * (dlPaczki * skala + GAP);
-          const posZ = z * (wysPaczki * skala + GAP) + WYS_PALETY * skala;
+          const posZ = z * (wysPaczki * skala + GAP) + WYS_PALETY;
 
           paczki.push(
             <g key={`paczka-${x}-${y}-${z}`}>
@@ -130,12 +124,14 @@ const IzometrycznaWizualizacja = ({ szerPaczki, dlPaczki, wysPaczki, maxWysokosc
   const zmienSkale = (delta) => {
     setSkala(prevSkala => {
       const nowaSkala = Math.max(0.5, Math.min(prevSkala + delta, 3));
+      dostosujWidok();
       return nowaSkala;
     });
   };
 
   return (
     <div className="flex flex-col items-center p-4">
+      <h2 className="text-2xl font-bold mb-4">Wizualizacja izometryczna paczek na palecie</h2>
       <div className="flex items-center space-x-2 mb-2">
         <button onClick={() => zmienSkale(-0.1)} className="p-1 border rounded">
           <ZoomOut size={24} />
@@ -150,12 +146,6 @@ const IzometrycznaWizualizacja = ({ szerPaczki, dlPaczki, wysPaczki, maxWysokosc
           {renderPaczki()}
         </g>
       </svg>
-      <p className="mt-4">
-        Optymalne ułożenie: {optymalnyUklad.szer} x {optymalnyUklad.dl} x {optymalnyUklad.wys} paczek
-      </p>
-      <p>
-        Łączna ilość paczek: {optymalnyUklad.szer * optymalnyUklad.dl * optymalnyUklad.wys}
-      </p>
     </div>
   );
 };
