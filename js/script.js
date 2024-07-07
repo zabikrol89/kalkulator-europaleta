@@ -1,101 +1,150 @@
-// Komponent React do wizualizacji palety
-const PaletteVisualization = ({ boxCount, layout }) => {
-  const boxSize = 20;
-  const paletteWidth = layout.x * boxSize;
-  const paletteHeight = layout.y * boxSize;
-  const paletteDepth = layout.z * boxSize;
+let draw;
+let skala = 1;
 
-  return (
-    <svg width={paletteWidth * 2} height={(paletteHeight + paletteDepth) * 1.5} viewBox={`0 0 ${paletteWidth * 2} ${(paletteHeight + paletteDepth) * 1.5}`}>
-      {/* Rysowanie palety */}
-      <polygon 
-        points={`${paletteWidth},${paletteHeight * 1.5 + paletteDepth} 0,${paletteHeight + paletteDepth} 0,${paletteHeight} ${paletteWidth},${paletteHeight * 1.5}`} 
-        fill="#8B4513"
-      />
-      {/* Rysowanie paczek */}
-      {[...Array(layout.z)].map((_, z) =>
-        [...Array(layout.y)].map((_, y) =>
-          [...Array(layout.x)].map((_, x) => {
-            if (x + y * layout.x + z * layout.x * layout.y < boxCount) {
-              const xPos = x * boxSize - y * boxSize + paletteWidth;
-              const yPos = y * (boxSize / 2) + x * (boxSize / 2) + (layout.z - z - 1) * boxSize;
-              return (
-                <g key={`box-${x}-${y}-${z}`}>
-                  {/* Górna ściana */}
-                  <polygon
-                    points={`${xPos},${yPos} ${xPos + boxSize},${yPos - boxSize / 2} ${xPos + 2 * boxSize},${yPos} ${xPos + boxSize},${yPos + boxSize / 2}`}
-                    fill="#90EE90"
-                    stroke="#006400"
-                  />
-                  {/* Lewa ściana */}
-                  <polygon
-                    points={`${xPos},${yPos} ${xPos},${yPos + boxSize} ${xPos + boxSize},${yPos + 3 * boxSize / 2} ${xPos + boxSize},${yPos + boxSize / 2}`}
-                    fill="#98FB98"
-                    stroke="#006400"
-                  />
-                  {/* Prawa ściana */}
-                  <polygon
-                    points={`${xPos + boxSize},${yPos + boxSize / 2} ${xPos + 2 * boxSize},${yPos} ${xPos + 2 * boxSize},${yPos + boxSize} ${xPos + boxSize},${yPos + 3 * boxSize / 2}`}
-                    fill="#7CFC00"
-                    stroke="#006400"
-                  />
-                </g>
-              );
-            }
-            return null;
-          })
-        )
-      )}
-    </svg>
-  );
-};
-
-// Funkcja do obliczania optymalnego układu
-function calculateOptimalLayout(count, szer_paczki, dl_paczki, wys_paczki, szer_palety, dl_palety, wys_max) {
-  const x = Math.floor(szer_palety / szer_paczki);
-  const y = Math.floor(dl_palety / dl_paczki);
-  const z = Math.floor(wys_max / wys_paczki);
-  return { x, y, z };
+function inicjalizujSVG() {
+  draw = SVG().addTo('#canvas').size(600, 400);
+  dostosujWidok();
 }
 
-// Główna funkcja kalkulatora
+function dostosujWidok() {
+  const viewBox = draw.viewbox();
+  draw.viewbox(viewBox.x, viewBox.y, viewBox.width / skala, viewBox.height / skala);
+}
+
+function isoX(x, y) {
+  return (x - y) * Math.cos(Math.PI / 6);
+}
+
+function isoY(x, y, z) {
+  return (x + y) * Math.sin(Math.PI / 6) - z;
+}
+
+function rysujPalete(szer, dl, wys) {
+  const grupa = draw.group();
+
+  grupa.polygon(`
+    ${isoX(0, dl)},${isoY(0, dl, 0)}
+    ${isoX(szer, dl)},${isoY(szer, dl, 0)}
+    ${isoX(szer, 0)},${isoY(szer, 0, 0)}
+    ${isoX(0, 0)},${isoY(0, 0, 0)}
+  `).fill('#8B4513').stroke({ color: '#5D2E0D', width: 1 });
+
+  grupa.polygon(`
+    ${isoX(0, dl)},${isoY(0, dl, 0)}
+    ${isoX(0, dl)},${isoY(0, dl, wys)}
+    ${isoX(szer, dl)},${isoY(szer, dl, wys)}
+    ${isoX(szer, dl)},${isoY(szer, dl, 0)}
+  `).fill('#6B3E26').stroke({ color: '#5D2E0D', width: 1 });
+
+  grupa.polygon(`
+    ${isoX(szer, 0)},${isoY(szer, 0, 0)}
+    ${isoX(szer, 0)},${isoY(szer, 0, wys)}
+    ${isoX(szer, dl)},${isoY(szer, dl, wys)}
+    ${isoX(szer, dl)},${isoY(szer, dl, 0)}
+  `).fill('#5D2E0D').stroke({ color: '#4A2508', width: 1 });
+
+  return grupa;
+}
+
+function rysujPaczke(x, y, z, szer, dl, wys) {
+  const grupa = draw.group();
+
+  grupa.polygon(`
+    ${isoX(x, y)},${isoY(x, y, z + wys)}
+    ${isoX(x + szer, y)},${isoY(x + szer, y, z + wys)}
+    ${isoX(x + szer, y + dl)},${isoY(x + szer, y + dl, z + wys)}
+    ${isoX(x, y + dl)},${isoY(x, y + dl, z + wys)}
+  `).fill('#4A90E2').stroke({ color: '#1E3A8A', width: 1 });
+
+  grupa.polygon(`
+    ${isoX(x + szer, y)},${isoY(x + szer, y, z)}
+    ${isoX(x + szer, y)},${isoY(x + szer, y, z + wys)}
+    ${isoX(x + szer, y + dl)},${isoY(x + szer, y + dl, z + wys)}
+    ${isoX(x + szer, y + dl)},${isoY(x + szer, y + dl, z)}
+  `).fill('#3A7BC8').stroke({ color: '#1E3A8A', width: 1 });
+
+  grupa.polygon(`
+    ${isoX(x, y + dl)},${isoY(x, y + dl, z)}
+    ${isoX(x, y + dl)},${isoY(x, y + dl, z + wys)}
+    ${isoX(x + szer, y + dl)},${isoY(x + szer, y + dl, z + wys)}
+    ${isoX(x + szer, y + dl)},${isoY(x + szer, y + dl, z)}
+  `).fill('#2A6DB8').stroke({ color: '#1E3A8A', width: 1 });
+
+  return grupa;
+}
+
 function obliczIloscPaczek() {
   const szer_paczki = parseInt(document.getElementById('paczka-szer').value);
   const dl_paczki = parseInt(document.getElementById('paczka-dl').value);
   const wys_paczki = parseInt(document.getElementById('paczka-wys').value);
-  const waga_paczki = parseFloat(document.getElementById('paczka-waga').value);
   const wys_max = parseInt(document.getElementById('paleta-wys-max').value);
   const szer_palety = 80;
   const dl_palety = 120;
+  const wys_palety = 14;
 
-  if (isNaN(szer_paczki) || isNaN(dl_paczki) || isNaN(wys_paczki) || isNaN(waga_paczki) || isNaN(wys_max)) {
-    document.getElementById('wyniki-content').innerHTML = 'Proszę wprowadzić poprawne wartości liczbowe dla wszystkich pól.';
+  if (isNaN(szer_paczki) || isNaN(dl_paczki) || isNaN(wys_paczki) || isNaN(wys_max)) {
+    document.getElementById('wynik').innerHTML = 'Proszę wprowadzić poprawne wartości liczbowe dla wszystkich pól.';
     return;
   }
 
-  const layout = calculateOptimalLayout(0, szer_paczki, dl_paczki, wys_paczki, szer_palety, dl_palety, wys_max);
-  const ile_paczek = layout.x * layout.y * layout.z;
-  const calkowita_waga = ile_paczek * waga_paczki;
+  const uklady = [
+    { szer: Math.floor(szer_palety / szer_paczki), dl: Math.floor(dl_palety / dl_paczki), wys: Math.floor((wys_max - wys_palety) / wys_paczki) },
+    { szer: Math.floor(szer_palety / dl_paczki), dl: Math.floor(dl_palety / szer_paczki), wys: Math.floor((wys_max - wys_palety) / wys_paczki) }
+  ];
 
-  let wynik_tekst = `Na paletę zmieści się ${ile_paczek} paczek (${layout.x} x ${layout.y} x ${layout.z}).`;
-  wynik_tekst += `<br>Całkowita waga: ${calkowita_waga.toFixed(2)} kg`;
+  let optymalny_uklad = null;
+  for (const uklad of uklady) {
+    const ile_paczek = uklad.szer * uklad.dl * uklad.wys;
+    const szerokosc_paczki = uklad.szer === Math.floor(szer_palety / szer_paczki) ? szer_paczki : dl_paczki;
+    const dlugosc_paczki = uklad.dl === Math.floor(dl_palety / dl_paczki) ? dl_paczki : szer_paczki;
 
-  document.getElementById('wyniki-content').innerHTML = wynik_tekst;
+    if (uklad.szer * szerokosc_paczki <= szer_palety && uklad.dl * dlugosc_paczki <= dl_palety) {
+      if (!optymalny_uklad || ile_paczek > optymalny_uklad.szer * optymalny_uklad.dl * optymalny_uklad.wys) {
+        optymalny_uklad = uklad;
+      }
+    }
+  }
 
-  // Renderowanie wizualizacji
-  ReactDOM.render(
-    <PaletteVisualization boxCount={ile_paczek} layout={layout} />,
-    document.getElementById('svg-container')
-  );
+  if (!optymalny_uklad) {
+    document.getElementById('wynik').innerHTML = 'Podane wymiary paczki nie pozwalają na optymalne ułożenie na europalecie bez przekraczania jej krawędzi. Proszę zweryfikować wprowadzone dane.';
+    return;
+  }
+
+  const ile_paczek = optymalny_uklad.szer * optymalny_uklad.dl * optymalny_uklad.wys;
+
+  document.getElementById('wynik').innerHTML = `Na paletę zmieści się ${ile_paczek} paczek (${optymalny_uklad.szer} x ${optymalny_uklad.dl} x ${optymalny_uklad.wys}).`;
+
+  rysujWizualizacje(optymalny_uklad, szer_paczki, dl_paczki, wys_paczki, szer_palety, dl_palety, wys_palety);
 }
 
-document.getElementById('paleta-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  obliczIloscPaczek();
-});
+function rysujWizualizacje(uklad, szer_paczki, dl_paczki, wys_paczki, szer_palety, dl_palety, wys_palety) {
+  draw.clear();
 
-// Inicjalne renderowanie pustej wizualizacji
-ReactDOM.render(
-  <PaletteVisualization boxCount={0} layout={{x: 1, y: 1, z: 1}} />,
-  document.getElementById('svg-container')
-);
+  rysujPalete(szer_palety, dl_palety, wys_palety);
+
+  const GAP = 0.5;
+  for (let z = 0; z < uklad.wys; z++) {
+    for (let y = 0; y < uklad.dl; y++) {
+      for (let x = 0; x < uklad.szer; x++) {
+        const posX = x * (szer_paczki + GAP);
+        const posY = y * (dl_paczki + GAP);
+        const posZ = z * (wys_paczki + GAP) + wys_palety;
+        rysujPaczke(posX, posY, posZ, szer_paczki, dl_paczki, wys_paczki);
+      }
+    }
+  }
+
+  dostosujWidok();
+}
+
+function zmienSkale(delta) {
+  skala = Math.max(0.5, Math.min(skala + delta, 3));
+  dostosujWidok();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  inicjalizujSVG();
+  document.getElementById('oblicz').addEventListener('click', obliczIloscPaczek);
+  document.getElementById('zoom-in').addEventListener('click', () => zmienSkale(0.1));
+  document.getElementById('zoom-out').addEventListener('click', () => zmienSkale(-0.1));
+});
